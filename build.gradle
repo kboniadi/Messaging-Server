@@ -13,9 +13,25 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    implementation group: 'com.google.code.gson', name: 'gson', version:'2.8.6'
 }
 
 test {
     useJUnitPlatform()
+}
+
+sourceSets {
+    main {
+        output.setResourcesDir(java.outputDir)
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'io.github.donut.proj.Main'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 mainClassName = 'io.github.donut.proj.Main'
