@@ -17,11 +17,11 @@ public class DataBus {
         private static final DataBus INSTANCE = new DataBus();
     }
 
-    public synchronized static DataBus getInstance() {
+    public static DataBus getInstance() {
         return InstanceHolder.INSTANCE;
     }
 
-    public synchronized static void register(Member client, String... messagesType) {
+    public static void register(Member client, String... messagesType) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(messagesType);
         for (var message : messagesType) {
@@ -29,7 +29,7 @@ public class DataBus {
         }
     }
 
-    public synchronized static void unregister(Member client, String... messagesType) {
+    public static void unregister(Member client, String... messagesType) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(messagesType);
         for (var message : messagesType) {
@@ -43,7 +43,7 @@ public class DataBus {
         }
     }
 
-    public synchronized static void publish(String type, IDataType message) {
+    public static void publish(String type, IDataType message) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(message);
         Set<?> clients = list.get(type);
@@ -51,12 +51,12 @@ public class DataBus {
             clients.forEach(k -> ((Member) k).send(message));
     }
 
-    public synchronized static boolean hasListeners(String message) {
+    public static boolean hasListeners(String message) {
         Objects.requireNonNull(message);
         return list.get(message) != null;
     }
 
-    public synchronized static void cleanup() {
+    public static void cleanup() {
         list.clear();
     }
 }
