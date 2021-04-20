@@ -1,6 +1,9 @@
 package io.github.donut.proj;
 
+import com.google.gson.JsonObject;
 import io.github.donut.proj.utils.PreparedStatementWrapper;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -17,6 +20,36 @@ public class DBManager extends DBSource {
 
     public static DBManager getInstance() {
         return InstanceHolder.INSTANCE;
+    }
+
+    public String getPlayerInfo(String userName) {
+        String sql = "SELECT * FROM playerinfo WHERE firstname = ?;";
+        JSONObject jsonObj = new JSONObject();
+        JSONArray array = new JSONArray();
+        try (
+                Connection connection = getDataSource().getConnection();
+                PreparedStatementWrapper stat = new PreparedStatementWrapper(connection, sql, userName) {
+                    @Override
+                    protected void prepareStatement(Object... params) throws SQLException {
+                        stat.setString(1, (String) params[0]);
+                    }
+                };
+                ResultSet rs = stat.executeQuery();
+        ) {
+            while (rs.next()) {
+                JSONObject record = new JSONObject();
+                record.put("id", rs.getString("id"));
+                record.put("username", rs.getString("username"));
+                record.put("firstname", rs.getString("firstname"));
+                record.put("lastname", rs.getString("lastname"));
+                record.put("password", rs.getString("password"));
+                array.put(record);
+            }
+            jsonObj.put("playerinfo", array);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jsonObj.toString();
     }
 
     public boolean signIn(String userName, String password) {

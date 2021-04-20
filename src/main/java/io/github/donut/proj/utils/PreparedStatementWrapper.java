@@ -8,12 +8,12 @@ import java.sql.SQLException;
 public abstract class PreparedStatementWrapper implements AutoCloseable {
     protected PreparedStatement stat;
 
-    public PreparedStatementWrapper(Connection con, String query, Object ... params) throws SQLException {
+    public PreparedStatementWrapper(Connection con, String query, Object... params) throws SQLException {
         this.stat = con.prepareStatement(query);
         this.prepareStatement(params);
     }
 
-    protected abstract void prepareStatement(Object ... params) throws SQLException;
+    protected abstract void prepareStatement(Object... params) throws SQLException;
 
     public ResultSet executeQuery() throws SQLException {
         return this.stat.executeQuery();

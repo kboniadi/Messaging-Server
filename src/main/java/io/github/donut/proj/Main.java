@@ -82,6 +82,8 @@ public class Main {
                     case "MoveData":
                         DataBus.publish("Movedata", MoveData.of(json.toString()));
                         break;
+                    case "getPlayerInfo":
+                        buffer.writeLine(DBManager.getInstance().getPlayerInfo(json.get("name").getAsString()));
                     }
                 }
 //                while(true) {
