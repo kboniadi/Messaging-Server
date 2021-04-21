@@ -3,7 +3,6 @@ package io.github.donut.proj;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -15,7 +14,7 @@ public abstract class DBSource {
             basicDS = new BasicDataSource();
             Properties properties = new Properties();
             // Loading properties file
-            properties.load(new FileInputStream("resources/db.properties"));
+            properties.load(DBSource.class.getResourceAsStream("db.properties"));
             basicDS.setDriverClassName(properties.getProperty("DRIVER_CLASS")); //loads the jdbc driver
             basicDS.setUrl(properties.getProperty("DB_CONNECTION_URL"));
             basicDS.setUsername(properties.getProperty("DB_USER"));
@@ -23,7 +22,6 @@ public abstract class DBSource {
             // Parameters for connection pooling
             basicDS.setInitialSize(10);
             basicDS.setMaxTotal(10);
-
         }catch(IOException e) {
             e.printStackTrace();
         }

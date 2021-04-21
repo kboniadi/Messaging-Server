@@ -64,7 +64,6 @@ public class Main {
             try {
                 while (true) {
                     JsonObject json = GsonWrapper.fromJson(buffer.readLine());
-                    System.out.println(json);
                     if (json == null) return;
 
                     switch (json.get("type").getAsString()) {
@@ -82,43 +81,10 @@ public class Main {
                     case "MoveData":
                         DataBus.publish("Movedata", MoveData.of(json.toString()));
                         break;
-                    case "getPlayerInfo":
+                    case "PlayerInfo":
                         buffer.writeLine(DBManager.getInstance().getPlayerInfo(json.get("name").getAsString()));
                     }
                 }
-//                while(true) {
-//                    JsonObject json = GsonWrapper.fromJson(buffer.readLine());
-//                    System.out.println(json);
-//                    if (json == null) return;
-//
-//                    if (json.get("type").getAsString().equals("Submission")) {
-//                        this.name = json.get("name").getAsString();
-//                        this.messages = GsonWrapper.fromJson(json.get("messages").getAsJsonArray().toString(), String[].class);
-//
-//                        synchronized (names) {
-//                            if (!name.isBlank() && !names.contains(name)) {
-//                                DataBus.register(this, this.messages);
-//                                names.add(name);
-//                                break;
-//                            }
-//                        }
-//                        buffer.writeLine("{\"type\":\"INVALID\"}");
-//                    }
-//                }
-//                System.out.println("name: " + this.name + " messages: " + Arrays.toString(this.messages));
-//
-//                buffer.writeLine(GsonWrapper.toJson(AcceptedData.of(this.name)));
-//                DataBus.publish("Message", MessageData.of(this.name + " has joined"));
-//                while (true) {
-//                    JsonObject json = GsonWrapper.fromJson(buffer.readLine());
-//                    if (json == null) return;
-//                    if (json.get("type").getAsString().equals("Message")) {
-//                        if (json.get("message").getAsString().equals("\\quit")) {
-//                            break;
-//                        }
-//                        DataBus.publish("Message", MessageData.of(this.name + ": " + json.get("message").getAsString()));
-//                    }
-//                }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

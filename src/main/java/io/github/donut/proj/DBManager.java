@@ -1,6 +1,5 @@
 package io.github.donut.proj;
 
-import com.google.gson.JsonObject;
 import io.github.donut.proj.utils.PreparedStatementWrapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
