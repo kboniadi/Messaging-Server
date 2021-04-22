@@ -51,6 +51,30 @@ public class DBManager extends DBSource {
         return jsonObj.toString();
     }
 
+    public boolean createAccount(String firstName, String lastName, String userName, String password) {
+        String sql = "INSERT INTO users(username, firstname, lastname, password) VALUES(?, ?, ?, ?);";
+        boolean temp = false;
+        try (
+                Connection connection = getDataSource().getConnection();
+                PreparedStatementWrapper stat = new PreparedStatementWrapper(connection, sql, firstName, lastName, userName, password) {
+                    @Override
+                    protected void prepareStatement(Object... params) throws SQLException {
+                        stat.setString(1, (String) params[0]);
+                        stat.setString(2, (String) params[1]);
+                        stat.setString(3, (String) params[2]);
+                        stat.setString(4, (String) params[3]);
+                    }
+                };
+                ResultSet rs = stat.executeQuery();
+        ) {
+            if (rs.first())
+                temp = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return temp;
+    }
+
     public boolean signIn(String userName, String password) {
         String sql = "Select ? FROM playerInfo;";
         String db_password = null;

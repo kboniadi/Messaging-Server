@@ -9,6 +9,7 @@ import io.github.donut.proj.databus.data.MoveData;
 import io.github.donut.proj.databus.data.RegisterData;
 import io.github.donut.proj.utils.BufferWrapper;
 import io.github.donut.proj.utils.GsonWrapper;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -83,6 +84,15 @@ public class Main {
                         break;
                     case "PlayerInfo":
                         buffer.writeLine(DBManager.getInstance().getPlayerInfo(json.get("name").getAsString()));
+                    case "CreateAccount":
+                        JSONObject returnJson = new JSONObject();
+                        boolean successful = DBManager.getInstance().createAccount(json.get("firstname").getAsString(),
+                                json.get("lastname").getAsString(),
+                                json.get("username").getAsString(),
+                                json.get("password").getAsString());
+
+                        returnJson.put("isSuccess", successful);
+                        buffer.writeLine(returnJson.toString());
                     }
                 }
             } catch (Exception e) {
