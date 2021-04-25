@@ -73,4 +73,46 @@ public class DBManager extends DBSource {
         return temp;
     }
 
+    public boolean verifyPassword (String userName, String password) {
+        String sql = "SELECT password FROM users WHERE username = ?;";
+//        JSONObject jsonObj = new JSONObject();
+        boolean temp = false;
+        try (
+                Connection connection = getDataSource().getConnection();
+                PreparedStatementWrapper stat = new PreparedStatementWrapper(connection, sql, userName, password) {
+                    @Override
+                    protected void prepareStatement(Object... params) throws SQLException {
+                        stat.setString(1, (String) params[0]);
+                        stat.setString(2, (String) params[1]);
+                    }
+                };
+        ) {
+            if (stat.executeUpdate() != 0) temp = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return temp;
+    }
+
+    public boolean updatePassword (String userName, String password) {
+        String sql = "UPDATE users SET password = ? WHERE username = ?;";
+//        JSONObject jsonObj = new JSONObject();
+        boolean temp = false;
+        try (
+                Connection connection = getDataSource().getConnection();
+                PreparedStatementWrapper stat = new PreparedStatementWrapper(connection, sql, userName, password) {
+                    @Override
+                    protected void prepareStatement(Object... params) throws SQLException {
+                        stat.setString(1, (String) params[0]);
+                        stat.setString(2, (String) params[1]);
+                    }
+                };
+        ) {
+            if (stat.executeUpdate() != 0) temp = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return temp;
+    }
+
 }
