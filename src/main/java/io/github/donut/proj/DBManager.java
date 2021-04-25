@@ -73,4 +73,40 @@ public class DBManager extends DBSource {
         return temp;
     }
 
+    /**
+     * Handles soft deletion of user account. Account persists in DB,
+     * with isDeleted field set to true.
+     * Currently a stub
+     * @param userName user to delete
+     * @return true if operation is successful, false otherwise
+     * @author Grant Goldsworth
+     */
+    public boolean deleteAccount(String userName) {
+        // DO THE SQL CHEESE HERE
+        return false;
+    }
+
+    /**
+     * Updates the first name in the DB for a user (not to be confused with updating actual username).
+     * @param userName account name to be updated
+     * @param firstName new name to be used
+     * @return true if operation was successful
+     * @author Grant Goldsworth
+     */
+    public boolean updateFirstName(String userName, String firstName) {
+        return false;
+    }
+
+    /**
+     * Updates the last name in the DB for a user (not to be confused with updating actual username).
+     * @param userName account name to be updated
+     * @param lastName new name to be used
+     * @return true if operation was successful
+     * @author Grant Goldsworth
+     */
+    public boolean updateLastName(String userName, String lastName) {
+        return false;
+    }
+
+
 }
