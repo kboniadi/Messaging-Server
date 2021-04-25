@@ -3,10 +3,6 @@ package io.github.donut.proj;
 import com.google.gson.JsonObject;
 import io.github.donut.proj.databus.DataBus;
 import io.github.donut.proj.databus.Member;
-import io.github.donut.proj.databus.data.AccountData;
-import io.github.donut.proj.databus.data.IDataType;
-import io.github.donut.proj.databus.data.MoveData;
-import io.github.donut.proj.databus.data.RegisterData;
 import io.github.donut.proj.utils.BufferWrapper;
 import io.github.donut.proj.utils.GsonWrapper;
 import org.json.JSONObject;
@@ -15,13 +11,10 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Executors;
 
 public class Main {
-    private static  final int MAX_T = 20;
-//    private static final Set<String> names = new HashSet<>();
+    private static  final int MAX_T = 8;
 
     public static void main(String[] args) throws IOException {
         System.out.println("Started server...");
@@ -36,9 +29,7 @@ public class Main {
 
     public static class ClientHandler implements Runnable, Member {
         private final Socket socket;
-        private String name;
         private String[] messages;
-        Thread clientThread;
         BufferWrapper buffer;
 
         public ClientHandler(Socket socket) throws IOException {
@@ -62,28 +53,27 @@ public class Main {
          */
         @Override
         public void run() {
+            boolean isClosed = false;
             try {
-                while (true) {
+                while (!isClosed) {
                     JsonObject json = GsonWrapper.fromJson(buffer.readLine());
                     if (json == null) return;
 
                     switch (json.get("type").getAsString()) {
-                    case "RegisterData":
-                        DataBus.register(this, GsonWrapper.fromJson(json.get("messages")
+                    case "Subscribe":
+                        messages = GsonWrapper.fromJson(json.get("channels")
                                 .getAsJsonArray()
-                                .toString(), String[].class));
+                                .toString(), String[].class);
+                        DataBus.register(this, messages);
                         break;
-                    case "AccountData":
-                        // database calls
-                        // .
-                        // .
-                        // .
-                        break;
-                    case "MoveData":
-                        DataBus.publish("Movedata", MoveData.of(json.toString()));
+                    case "Message":
+                        json.remove("type");
+                        DataBus.publish(json.get("channels").getAsString(), json.toString());
                         break;
                     case "PlayerInfo":
-                        buffer.writeLine(DBManager.getInstance().getPlayerInfo(json.get("name").getAsString()));
+                        buffer.writeLine(DBManager.getInstance().getPlayerInfo(json.get("username").getAsString()));
+                        isClosed = true;
+                        break;
                     case "CreateAccount":
                         JSONObject returnJson = new JSONObject();
                         boolean successful = DBManager.getInstance().createAccount(json.get("firstname").getAsString(),
@@ -93,21 +83,19 @@ public class Main {
 
                         returnJson.put("isSuccess", successful);
                         buffer.writeLine(returnJson.toString());
+                        isClosed = true;
+                        break;
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 System.out.println("Closing client connection...");
-//                if (name != null && !name.isBlank()) {
-//                    System.out.println(this.name + " is leaving");
-//                    names.remove(name);
-//                    DataBus.publish("Message", MessageData.of(this.name + " has left"));
-//                }
-                if (messages != null) {
+
+                if (messages != null)
                     DataBus.unregister(this, messages);
-                }
                 try {
+                    buffer.close();
                     socket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -116,14 +104,7 @@ public class Main {
         }
 
         @Override
-        public void send(IDataType event) {
-            String json = null;
-            if (event instanceof MoveData)
-                json = GsonWrapper.toJson((MoveData) event);
-            else if (event instanceof AccountData)
-                json = GsonWrapper.toJson((AccountData) event);
-            else if (event instanceof RegisterData)
-                json = GsonWrapper.toJson((RegisterData) event);
+        public void send(String json) {
             buffer.writeLine(json);
         }
     }

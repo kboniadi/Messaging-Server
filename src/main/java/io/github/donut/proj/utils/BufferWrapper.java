@@ -37,6 +37,10 @@ public class BufferWrapper {
         return response;
     }
 
+    public void close() throws IOException {
+        this.writer.close();
+        this.reader.close();
+    }
 
     public static class Builder {
         private BufferedWriter writer;

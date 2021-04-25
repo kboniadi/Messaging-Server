@@ -22,8 +22,8 @@ public class DBManager extends DBSource {
     }
 
     public String getPlayerInfo(String userName) {
-        String sql = "SELECT * FROM playerinfo WHERE firstname = ?;";
-        JSONObject jsonObj = new JSONObject();
+        String sql = "SELECT * FROM users WHERE username = ?;";
+//        JSONObject jsonObj = new JSONObject();
         JSONArray array = new JSONArray();
         try (
                 Connection connection = getDataSource().getConnection();
@@ -44,11 +44,11 @@ public class DBManager extends DBSource {
                 record.put("password", rs.getString("password"));
                 array.put(record);
             }
-            jsonObj.put("playerinfo", array);
+//            jsonObj.put("users", array);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return jsonObj.toString();
+        return array.toString();
     }
 
     public boolean createAccount(String firstName, String lastName, String userName, String password) {
@@ -65,74 +65,12 @@ public class DBManager extends DBSource {
                         stat.setString(4, (String) params[3]);
                     }
                 };
-                ResultSet rs = stat.executeQuery();
         ) {
-            if (rs.first())
-                temp = true;
+            if (stat.executeUpdate() != 0) temp = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return temp;
-    }
-
-    public boolean signIn(String userName, String password) {
-        String sql = "Select ? FROM playerInfo;";
-        String db_password = null;
-        try (
-                Connection connection = getDataSource().getConnection();
-                PreparedStatementWrapper stat = new PreparedStatementWrapper(connection, sql, userName) {
-                    @Override
-                    protected void prepareStatement(Object... params) throws SQLException {
-                        stat.setString(1, (String) params[0]);
-                    }
-                };
-                ResultSet rs = stat.executeQuery();
-        ) {
-            while (rs.next()) {
-                db_password = rs.getString("password");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return password.equals(db_password);
-    }
-
-    public void signUp(String userName, String password, String firstName, String lastName) {
-        String sql = "INSERT INTO playerInfo VALUES(?, ?, ?, ?);";
-        try (
-                Connection connection = getDataSource().getConnection();
-                PreparedStatementWrapper stat = new PreparedStatementWrapper(connection, sql, userName, password, firstName, lastName) {
-                    @Override
-                    protected void prepareStatement(Object... params) throws SQLException {
-                        stat.setString(1, (String) params[0]);
-                        stat.setString(2, (String) params[1]);
-                        stat.setString(3, (String) params[2]);
-                        stat.setString(4, (String) params[3]);
-                    }
-                };
-        ) {
-            stat.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteAccount(String userName, String password) {
-        String sql = "DELETE from playerInfo where userName = ? AND password = ?;";
-        try (
-                Connection connection = getDataSource().getConnection();
-                PreparedStatementWrapper stat = new PreparedStatementWrapper(connection, sql, userName, password) {
-                    @Override
-                    protected void prepareStatement(Object... params) throws SQLException {
-                        stat.setString(1, (String) params[0]);
-                        stat.setString(2, (String) params[1]);
-                    }
-                };
-        ) {
-            stat.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }

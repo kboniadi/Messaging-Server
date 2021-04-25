@@ -1,6 +1,5 @@
 package io.github.donut.proj.databus;
 
-import io.github.donut.proj.databus.data.IDataType;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
@@ -43,12 +42,12 @@ public class DataBus {
         }
     }
 
-    public static void publish(String type, IDataType message) {
+    public static void publish(String type, String json) {
         Objects.requireNonNull(type);
-        Objects.requireNonNull(message);
-        Set<?> clients = list.get(type);
+        Objects.requireNonNull(json);
+        Set<Member> clients = list.get(type);
         if (clients != null)
-            clients.forEach(k -> ((Member) k).send(message));
+            clients.forEach(k -> k.send(json));
     }
 
     public static boolean hasListeners(String message) {
