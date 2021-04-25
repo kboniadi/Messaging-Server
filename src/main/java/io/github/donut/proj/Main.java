@@ -85,6 +85,24 @@ public class Main {
                         buffer.writeLine(returnJson.toString());
                         isClosed = true;
                         break;
+                    case "VerifyPassword":
+                        JSONObject verifyPwdJson = new JSONObject();
+                        boolean verifyPwdSuccessful = DBManager.getInstance().verifyPassword(json.get("username").getAsString(),
+                                json.get("password").getAsString());
+
+                        verifyPwdJson.put("isSuccess", verifyPwdSuccessful);
+                        buffer.writeLine(verifyPwdJson.toString());
+                        isClosed = true;
+                        break;
+                    case "UpdatePassword":
+                        JSONObject updatePwdJson = new JSONObject();
+                        boolean updatePwdSuccessful = DBManager.getInstance().updatePassword(json.get("username").getAsString(),
+                                json.get("password").getAsString());
+
+                        updatePwdJson.put("isSuccess", updatePwdSuccessful);
+                        buffer.writeLine(updatePwdJson.toString());
+                        isClosed = true;
+                        break;
                     }
                 }
             } catch (Exception e) {
