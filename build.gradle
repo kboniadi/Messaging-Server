@@ -13,9 +13,28 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    implementation group: 'com.google.code.gson', name: 'gson', version:'2.8.6'
+    implementation group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.8.0'
+    implementation group: 'org.json', name: 'json', version: '20210307'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
 }
 
 test {
     useJUnitPlatform()
+}
+
+sourceSets {
+    main {
+        output.setResourcesDir(java.outputDir)
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'io.github.donut.proj.Main'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 mainClassName = 'io.github.donut.proj.Main'
