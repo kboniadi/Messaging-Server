@@ -82,8 +82,26 @@ public class DBManager extends DBSource {
      * @author Grant Goldsworth
      */
     public boolean deleteAccount(String userName) {
-        // DO THE SQL CHEESE HERE
-        return false;
+        // update the user with userName to have value of true/1 in isdeleted column
+        String sql = "UPDATE users SET isdeleted = 1 WHERE username = ?";
+        boolean result = false;
+        try (
+                // create connection
+                Connection connection = getDataSource().getConnection();
+                // create wrapper for java's prepared statement
+                PreparedStatementWrapper statement = new PreparedStatementWrapper(connection, sql, userName) {
+                    @Override
+                    // only 1 ? = only 1 parameter (the username)
+                    protected void prepareStatement(Object... params) throws SQLException {
+                        stat.setString(1, (String) params[0]);
+                    }
+                };
+        ) {
+            if (statement.executeUpdate() != 0) result = true; // if result is anything other than 0, success (updated)
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     /**
@@ -98,13 +116,14 @@ public class DBManager extends DBSource {
     }
 
     /**
-     * Updates the last name in the DB for a user (not to be confused with updating actual username).
+     * Updates the last name in the DB for a user (not to be confused with updating actual username)
      * @param userName account name to be updated
      * @param lastName new name to be used
      * @return true if operation was successful
      * @author Grant Goldsworth
      */
     public boolean updateLastName(String userName, String lastName) {
+        // Joey I think you're assigned to this one already but here's a stub for you - grant
         return false;
     }
 
