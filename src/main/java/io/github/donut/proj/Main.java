@@ -76,7 +76,8 @@ public class Main {
                         break;
                     case "CreateAccount":
                         JSONObject returnJson = new JSONObject();
-                        boolean successful = DBManager.getInstance().createAccount(json.get("firstname").getAsString(),
+                        boolean successful = DBManager.getInstance().createAccount(
+                                json.get("firstname").getAsString(),
                                 json.get("lastname").getAsString(),
                                 json.get("username").getAsString(),
                                 json.get("password").getAsString());
@@ -92,11 +93,15 @@ public class Main {
             } finally {
                 System.out.println("Closing client connection...");
 
-                if (messages != null)
+                if (messages != null) {
+                    System.out.println("cleaning up databus...");
                     DataBus.unregister(this, messages);
+                }
                 try {
+                    System.out.println("cleaning up buffer and socket connections...");
                     buffer.close();
                     socket.close();
+                    System.out.println("closed.");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
