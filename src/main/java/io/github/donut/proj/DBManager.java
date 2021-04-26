@@ -73,4 +73,23 @@ public class DBManager extends DBSource {
         return temp;
     }
 
+    public boolean updateLastName(String userName, String lastName) {
+        String sql = "UPDATE users SET lastname = ? WHERE username = ?;";
+        boolean temp = false;
+        try (
+                Connection connection = getDataSource().getConnection();
+                PreparedStatementWrapper stat = new PreparedStatementWrapper(connection, sql, userName, lastName) {
+                    @Override
+                    protected void prepareStatement(Object... params) throws SQLException {
+                        stat.setString(1, (String) params[1]);
+                        stat.setString(2, (String) params[0]);;
+                    }
+                };
+        ) {
+            if (stat.executeUpdate() != 0) temp = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return temp;
+    }
 }

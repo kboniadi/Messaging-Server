@@ -85,6 +85,17 @@ public class Main {
                         buffer.writeLine(returnJson.toString());
                         isClosed = true;
                         break;
+                    case "UpdateLastName":
+                        JSONObject returnLastNameJson = new JSONObject();
+                        boolean lastNameSuccess = DBManager.getInstance().updateLastName(json.get("username").getAsString(),
+                                json.get("lastname").getAsString());
+
+                        returnLastNameJson.put("isSuccess", lastNameSuccess);
+                        buffer.writeLine(returnLastNameJson.toString());
+                        isClosed = true;
+                        System.out.println(returnLastNameJson);
+                        break;
+//                    case "UpdateUserName":
                     }
                 }
             } catch (Exception e) {
