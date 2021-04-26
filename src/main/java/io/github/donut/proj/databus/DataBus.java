@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DataBus {
-    private static final HashMap<String, Set<Member>> list = new HashMap<>();
+    private static final ConcurrentHashMap<String, Set<Member>> list = new ConcurrentHashMap<>();
 
     private DataBus() {
         // empty

@@ -73,9 +73,17 @@ public class DBManager extends DBSource {
         return temp;
     }
 
+    /**
+     * This method will be called from the switch statement within {@code Main.java} that will query the database to
+     * verify the password for the user. It will select a password from the database and check whether the entered password
+     * and username was correct or not.
+     * @param userName username of player
+     * @param password password for that player account
+     * @return a boolean value whether the password was true or not
+     */
     public boolean verifyPassword (String userName, String password) {
         String sql = "SELECT password FROM users WHERE username = ?;";
-//        JSONObject jsonObj = new JSONObject();
+
         boolean temp = false;
         try (
                 Connection connection = getDataSource().getConnection();
@@ -94,9 +102,16 @@ public class DBManager extends DBSource {
         return temp;
     }
 
+    /**
+     * This method will update the password of the particular user specified with the username.
+     * This method is called from the switch statement that is in the main.java file.
+     * @param userName username of player
+     * @param password password of player
+     * @return a boolean representation of the request whether it was successful or not
+     * @author Utsav Parajuli
+     */
     public boolean updatePassword (String userName, String password) {
         String sql = "UPDATE users SET password = ? WHERE username = ?;";
-//        JSONObject jsonObj = new JSONObject();
         boolean temp = false;
         try (
                 Connection connection = getDataSource().getConnection();
