@@ -66,6 +66,7 @@ public class DBManager extends DBSource {
                     }
                 };
         ) {
+
             if (stat.executeUpdate() != 0) temp = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,8 +83,7 @@ public class DBManager extends DBSource {
      * @return a boolean value whether the password was true or not
      */
     public boolean verifyPassword (String userName, String password) {
-        String sql = "SELECT password FROM users WHERE username = ?;";
-
+        String sql = "SELECT password FROM users WHERE username = ? AND password = ?;";
         boolean temp = false;
         try (
                 Connection connection = getDataSource().getConnection();
@@ -94,8 +94,14 @@ public class DBManager extends DBSource {
                         stat.setString(2, (String) params[1]);
                     }
                 };
+                ResultSet rs2 = stat.executeQuery();
         ) {
-            if (stat.executeUpdate() != 0) temp = true;
+            //we retrieve the password from the data we received back
+            while(rs2.next())
+            {
+                if (rs2.getString("password").equals(password))
+                    temp = true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -115,7 +121,7 @@ public class DBManager extends DBSource {
         boolean temp = false;
         try (
                 Connection connection = getDataSource().getConnection();
-                PreparedStatementWrapper stat = new PreparedStatementWrapper(connection, sql, userName, password) {
+                PreparedStatementWrapper stat = new PreparedStatementWrapper(connection, sql, password, userName) {
                     @Override
                     protected void prepareStatement(Object... params) throws SQLException {
                         stat.setString(1, (String) params[0]);
