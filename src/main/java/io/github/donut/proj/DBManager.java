@@ -132,7 +132,8 @@ public class DBManager extends DBSource {
         }
         return temp;
     }
-     * Handles soft deletion of user account. Account persists in DB,
+
+     /* Handles soft deletion of user account. Account persists in DB,
      * with isDeleted field set to true.
      * This method only sends the message to the DB. It will return true if the deletion
      * was successful, false otherwise.
@@ -171,18 +172,6 @@ public class DBManager extends DBSource {
      * @author Grant Goldsworth
      */
     public boolean updateFirstName(String userName, String firstName) {
-        return false;
-    }
-
-    /**
-     * Updates the last name in the DB for a user (not to be confused with updating actual username)
-     * @param userName account name to be updated
-     * @param lastName new name to be used
-     * @return true if operation was successful
-     * @author Grant Goldsworth
-     */
-    public boolean updateLastName(String userName, String lastName) {
-        // Joey I think you're assigned to this one already but here's a stub for you - grant
         return false;
     }
 
