@@ -101,6 +101,16 @@ public class Main {
 
                         returnUpdatedUsernameJson.put("isSuccess", userNameUpdateSuccess);
                         buffer.writeLine(returnUpdatedUsernameJson.toString());
+
+                    case "UpdateFirstName": // update the first name of <userName> account on file - GRANT
+                        // creating DB connection, be sure to close connection when done
+                        JSONObject updateFirstJSON = new JSONObject();
+                        successful = DBManager.getInstance().updateFirstName(json.get("username").getAsString(),
+                                json.get("firstname").getAsString());
+
+                        // create JSON message object, then write it to the buffer
+                        updateFirstJSON.put("isSuccess", successful);
+                        buffer.writeLine(updateFirstJSON.toString());
                         isClosed = true;
                         break;
                     }
