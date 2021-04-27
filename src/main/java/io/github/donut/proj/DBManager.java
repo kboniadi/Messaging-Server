@@ -76,7 +76,8 @@ public class DBManager extends DBSource {
     /**
      * Handles soft deletion of user account. Account persists in DB,
      * with isDeleted field set to true.
-     * Currently a stub
+     * This method only sends the message to the DB. It will return true if the deletion
+     * was successful, false otherwise.
      * @param userName user to delete
      * @return true if operation is successful, false otherwise
      * @author Grant Goldsworth
