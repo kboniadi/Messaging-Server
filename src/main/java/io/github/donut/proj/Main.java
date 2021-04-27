@@ -85,9 +85,28 @@ public class Main {
                         buffer.writeLine(returnJson.toString());
                         isClosed = true;
                         break;
+                    case "UpdateLastName":
+                        JSONObject returnLastNameJson = new JSONObject();
+                        boolean lastNameSuccess = DBManager.getInstance().updateLastName(json.get("username").getAsString(),
+                                json.get("lastname").getAsString());
+
+                        returnLastNameJson.put("isSuccess", lastNameSuccess);
+                        buffer.writeLine(returnLastNameJson.toString());
+                        isClosed = true;
+                        break;
+                    case "UpdateUserName":
+                        JSONObject returnUpdatedUsernameJson = new JSONObject();
+                        boolean userNameUpdateSuccess = DBManager.getInstance().updateUserName(json.get("oldusername").getAsString(),
+                                json.get("newusername").getAsString());
+
+                        returnUpdatedUsernameJson.put("isSuccess", userNameUpdateSuccess);
+                        buffer.writeLine(returnUpdatedUsernameJson.toString());
+                        isClosed = true;
+                        break;
                     }
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
+                // TODO Grant and I (Joey Campbell) get an exception thrown here when we kill the api
                 e.printStackTrace();
             } finally {
                 System.out.println("Closing client connection...");
