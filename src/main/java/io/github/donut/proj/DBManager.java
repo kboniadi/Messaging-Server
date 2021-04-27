@@ -143,7 +143,7 @@ public class DBManager extends DBSource {
      */
     public boolean deleteAccount(String userName) {
         // update the user with userName to have value of true/1 in isdeleted column
-        String sql = "UPDATE users SET isdeleted = 1 WHERE username = ?";
+        String sql = "UPDATE users SET isdeleted = 'true' WHERE username = ?;";
         boolean result = false;
         try (
                 // create connection

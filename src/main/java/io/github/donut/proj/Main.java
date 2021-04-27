@@ -113,6 +113,15 @@ public class Main {
                         buffer.writeLine(updateFirstJSON.toString());
                         isClosed = true;
                         break;
+
+                        case "DeleteAccount": // mark isDeleted flag as true in DB - GRANT
+                            JSONObject deleteAccountJSON = new JSONObject();
+                            successful = DBManager.getInstance().deleteAccount(json.get("username").getAsString());
+
+                            deleteAccountJSON.put("isSuccess", successful);
+                            buffer.writeLine(deleteAccountJSON.toString());
+                            isClosed = true;
+                            break;
                     }
                 }
             } catch (IOException e) {
