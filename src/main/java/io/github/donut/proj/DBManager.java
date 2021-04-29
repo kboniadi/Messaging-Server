@@ -133,8 +133,9 @@ public class DBManager extends DBSource {
         return temp;
     }
 
-     /* Handles soft deletion of user account. Account persists in DB,
-     * with isDeleted field set to true.
+     /**
+     * Handles soft deletion of user account. Account persists in DB,
+     * with {@code isDeleted} field set to true.
      * This method only sends the message to the DB. It will return true if the deletion
      * was successful, false otherwise.
      * @param userName user to delete
@@ -172,7 +173,24 @@ public class DBManager extends DBSource {
      * @author Grant Goldsworth
      */
     public boolean updateFirstName(String userName, String firstName) {
-        return false;
+        String sql = "UPDATE users SET firstname = ? WHERE username = ?;";
+        boolean result = false;
+        try (
+                Connection connection = getDataSource().getConnection();
+                PreparedStatementWrapper stat = new PreparedStatementWrapper(connection, sql, firstName, userName) {
+                    @Override
+                    protected void prepareStatement(Object... params) throws SQLException {
+                        stat.setString(1, (String) params[0]);
+                        stat.setString(2, (String) params[1]);
+                    }
+                };
+        ) {
+            // if the DB returns any number besides 0, the modification was successful
+            if (stat.executeUpdate() != 0) result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 

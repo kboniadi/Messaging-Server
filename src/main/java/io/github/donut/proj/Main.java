@@ -70,10 +70,12 @@ public class Main {
                         json.remove("type");
                         DataBus.publish(json.get("channels").getAsString(), json.toString());
                         break;
+
                     case "PlayerInfo":
                         buffer.writeLine(DBManager.getInstance().getPlayerInfo(json.get("username").getAsString()));
                         isClosed = true;
                         break;
+
                     case "CreateAccount":
                         JSONObject returnJson = new JSONObject();
                         boolean successful = DBManager.getInstance().createAccount(json.get("firstname").getAsString(),
@@ -85,6 +87,7 @@ public class Main {
                         buffer.writeLine(returnJson.toString());
                         isClosed = true;
                         break;
+
                     case "UpdateLastName":
                         JSONObject returnLastNameJson = new JSONObject();
                         boolean lastNameSuccess = DBManager.getInstance().updateLastName(json.get("username").getAsString(),
@@ -94,13 +97,6 @@ public class Main {
                         buffer.writeLine(returnLastNameJson.toString());
                         isClosed = true;
                         break;
-                    case "UpdateUserName":
-                        JSONObject returnUpdatedUsernameJson = new JSONObject();
-                        boolean userNameUpdateSuccess = DBManager.getInstance().updateUserName(json.get("oldusername").getAsString(),
-                                json.get("newusername").getAsString());
-
-                        returnUpdatedUsernameJson.put("isSuccess", userNameUpdateSuccess);
-                        buffer.writeLine(returnUpdatedUsernameJson.toString());
 
                     case "UpdateFirstName": // update the first name of <userName> account on file - GRANT
                         // creating DB connection, be sure to close connection when done
@@ -114,14 +110,23 @@ public class Main {
                         isClosed = true;
                         break;
 
-                        case "DeleteAccount": // mark isDeleted flag as true in DB - GRANT
-                            JSONObject deleteAccountJSON = new JSONObject();
-                            successful = DBManager.getInstance().deleteAccount(json.get("username").getAsString());
+                    case "UpdateUserName":
+                        JSONObject returnUpdatedUsernameJson = new JSONObject();
+                        boolean userNameUpdateSuccess = DBManager.getInstance().updateUserName(json.get("oldusername").getAsString(),
+                                json.get("newusername").getAsString());
 
-                            deleteAccountJSON.put("isSuccess", successful);
-                            buffer.writeLine(deleteAccountJSON.toString());
-                            isClosed = true;
-                            break;
+                        returnUpdatedUsernameJson.put("isSuccess", userNameUpdateSuccess);
+                        buffer.writeLine(returnUpdatedUsernameJson.toString());
+
+
+                    case "DeleteAccount": // mark isDeleted flag as true in DB - GRANT
+                        JSONObject deleteAccountJSON = new JSONObject();
+                        successful = DBManager.getInstance().deleteAccount(json.get("username").getAsString());
+
+                        deleteAccountJSON.put("isSuccess", successful);
+                        buffer.writeLine(deleteAccountJSON.toString());
+                        isClosed = true;
+                        break;
                     }
                 }
             } catch (IOException e) {
