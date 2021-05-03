@@ -7,11 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DataBus {
-<<<<<<< HEAD
     private final HashMap<String, Set<Member>> list = new HashMap<>();
-=======
-    private static final ConcurrentHashMap<String, Set<Member>> list = new ConcurrentHashMap<>();
->>>>>>> 380d9237352199e6d1705ac5013c9b07dc4fb7af
 
     private DataBus() {
         // empty
