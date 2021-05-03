@@ -4,10 +4,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DataBus {
-    private static final ConcurrentHashMap<String, Set<Member>> list = new ConcurrentHashMap<>();
+    private final HashMap<String, Set<Member>> list = new HashMap<>();
 
     private DataBus() {
         // empty
@@ -21,7 +20,7 @@ public class DataBus {
         return InstanceHolder.INSTANCE;
     }
 
-    public static void register(Member client, String... messagesType) {
+    public void register(Member client, String... messagesType) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(messagesType);
         for (var message : messagesType) {
@@ -29,7 +28,7 @@ public class DataBus {
         }
     }
 
-    public static void unregister(Member client, String... messagesType) {
+    public void unregister(Member client, String... messagesType) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(messagesType);
         for (var message : messagesType) {
@@ -43,7 +42,7 @@ public class DataBus {
         }
     }
 
-    public static void publish(String type, String json) {
+    public void publish(String type, String json) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(json);
         Set<Member> clients = list.get(type);
@@ -51,12 +50,12 @@ public class DataBus {
             clients.forEach(k -> k.send(json));
     }
 
-    public static boolean hasListeners(String message) {
+    public boolean hasListeners(String message) {
         Objects.requireNonNull(message);
         return list.get(message) != null;
     }
 
-    public static void cleanup() {
+    public void cleanup() {
         list.clear();
     }
 }
