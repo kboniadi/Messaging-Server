@@ -34,11 +34,11 @@ public class ClientBufferConsumer implements Runnable {
                     temp.getKey().messages = GsonWrapper.fromJson(temp.getValue().get("channels")
                             .getAsJsonArray()
                             .toString(), String[].class);
-                    DataBus.register(temp.getKey(), temp.getKey().messages);
+                    DataBus.getInstance().register(temp.getKey(), temp.getKey().messages);
                     break;
                 case "Message":
                     temp.getValue().remove("type");
-                    DataBus.publish(temp.getValue().get("channels").getAsString(), temp.getValue().toString());
+                    DataBus.getInstance().publish(temp.getValue().get("channels").getAsString(), temp.getValue().toString());
                     break;
                 }
             }

@@ -6,21 +6,21 @@ import java.util.Objects;
 import java.util.Set;
 
 public class DataBus {
-    private static final HashMap<String, Set<Member>> list = new HashMap<>();
+    private final HashMap<String, Set<Member>> list = new HashMap<>();
 
     private DataBus() {
         // empty
     }
 
-//    private static class InstanceHolder {
-//        private static final DataBus INSTANCE = new DataBus();
-//    }
-//
-//    public static DataBus getInstance() {
-//        return InstanceHolder.INSTANCE;
-//    }
+    private static class InstanceHolder {
+        private static final DataBus INSTANCE = new DataBus();
+    }
 
-    public static void register(Member client, String... messagesType) {
+    public static DataBus getInstance() {
+        return InstanceHolder.INSTANCE;
+    }
+
+    public void register(Member client, String... messagesType) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(messagesType);
         for (var message : messagesType) {
@@ -28,7 +28,7 @@ public class DataBus {
         }
     }
 
-    public static void unregister(Member client, String... messagesType) {
+    public void unregister(Member client, String... messagesType) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(messagesType);
         for (var message : messagesType) {
@@ -42,7 +42,7 @@ public class DataBus {
         }
     }
 
-    public static void publish(String type, String json) {
+    public void publish(String type, String json) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(json);
         Set<Member> clients = list.get(type);
@@ -50,12 +50,12 @@ public class DataBus {
             clients.forEach(k -> k.send(json));
     }
 
-    public static boolean hasListeners(String message) {
+    public boolean hasListeners(String message) {
         Objects.requireNonNull(message);
         return list.get(message) != null;
     }
 
-    public static void cleanup() {
+    public void cleanup() {
         list.clear();
     }
 }

@@ -99,7 +99,7 @@ public class Main {
 
                 if (messages != null) {
                     Logger.log("Cleaning up DataBus...");
-                    DataBus.unregister(this, messages);
+                    DataBus.getInstance().unregister(this, messages);
                 }
                 try {
                     Logger.log("Cleaning up buffer and socket connections...");
