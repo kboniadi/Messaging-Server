@@ -20,7 +20,7 @@ public class DataBus {
 //        return InstanceHolder.INSTANCE;
 //    }
 
-    public synchronized static void register(Member client, String... messagesType) {
+    public static void register(Member client, String... messagesType) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(messagesType);
         for (var message : messagesType) {
@@ -28,7 +28,7 @@ public class DataBus {
         }
     }
 
-    public synchronized static void unregister(Member client, String... messagesType) {
+    public static void unregister(Member client, String... messagesType) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(messagesType);
         for (var message : messagesType) {

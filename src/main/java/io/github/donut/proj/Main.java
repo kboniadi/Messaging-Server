@@ -91,7 +91,8 @@ public class Main {
 //                        break;
 //                    }
                 }
-            } catch (Exception e) {
+            } catch (IOException | InterruptedException e) {
+                // TODO Grant and I (Joey Campbell) get an exception thrown here when we kill the api
                 e.printStackTrace();
             } finally {
                 Logger.log("Closing client connection...");
