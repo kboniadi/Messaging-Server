@@ -1,26 +1,26 @@
 package io.github.donut.proj.databus;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DataBus {
-    private static final ConcurrentHashMap<String, Set<Member>> list = new ConcurrentHashMap<>();
+    private static final HashMap<String, Set<Member>> list = new HashMap<>();
 
     private DataBus() {
         // empty
     }
 
-    private static class InstanceHolder {
-        private static final DataBus INSTANCE = new DataBus();
-    }
+//    private static class InstanceHolder {
+//        private static final DataBus INSTANCE = new DataBus();
+//    }
+//
+//    public static DataBus getInstance() {
+//        return InstanceHolder.INSTANCE;
+//    }
 
-    public static DataBus getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
-
-    public static void register(Member client, String... messagesType) {
+    public synchronized static void register(Member client, String... messagesType) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(messagesType);
         for (var message : messagesType) {
@@ -28,7 +28,7 @@ public class DataBus {
         }
     }
 
-    public static void unregister(Member client, String... messagesType) {
+    public synchronized static void unregister(Member client, String... messagesType) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(messagesType);
         for (var message : messagesType) {
