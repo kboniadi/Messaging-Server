@@ -3,14 +3,15 @@ package io.github.donut.proj;
 import com.google.gson.JsonObject;
 import io.github.donut.proj.databus.DataBus;
 import io.github.donut.proj.databus.Member;
-import io.github.donut.proj.utils.BufferWrapper;
 import io.github.donut.proj.utils.GsonWrapper;
+import io.github.donut.proj.utils.IOWrapper;
 import io.github.donut.proj.utils.Logger;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -38,13 +39,13 @@ public class Main {
     public static class ClientHandler implements Runnable, Member {
         private final Socket socket;
         String[] messages;
-        BufferWrapper buffer;
+        IOWrapper buffer;
 
         public ClientHandler(Socket socket) throws IOException {
             this.socket = socket;
-            buffer = new BufferWrapper.Builder()
-                    .withWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8)))
-                    .withReader(new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8)))
+            buffer = new IOWrapper.Builder()
+                    .withWriter(new DataOutputStream(socket.getOutputStream()))
+                    .withReader(new DataInputStream(socket.getInputStream()))
                     .build();
         }
 
@@ -66,37 +67,11 @@ public class Main {
                 while (true) {
                     JsonObject json = GsonWrapper.fromJson(buffer.readLine());
                     if (json == null) return;
-
                     bufferSink.put(new AbstractMap.SimpleImmutableEntry<>(this, json));
-//                    switch (json.get("type").getAsString()) {
-//                    case "Subscribe":
-//                    case "Message":
-//                        bufferSink.put(new AbstractMap.SimpleImmutableEntry<>(this, json));
-//                        break;
-//                    case "PlayerInfo":
-//                        buffer.writeLine(DBManager.getInstance().getPlayerInfo(json.get("username").getAsString()));
-//                        isClosed = true;
-//                        break;
-//                    case "CreateAccount":
-//                        JSONObject returnJson = new JSONObject();
-//                        boolean successful = DBManager.getInstance().createAccount(
-//                                json.get("firstname").getAsString(),
-//                                json.get("lastname").getAsString(),
-//                                json.get("username").getAsString(),
-//                                json.get("password").getAsString());
-//
-//                        returnJson.put("isSuccess", successful);
-//                        buffer.writeLine(returnJson.toString());
-//                        isClosed = true;
-//                        break;
-//                    }
                 }
             } catch (IOException | InterruptedException e) {
-                // TODO Grant and I (Joey Campbell) get an exception thrown here when we kill the api
-                e.printStackTrace();
-            } finally {
                 Logger.log("Closing client connection...");
-
+            } finally {
                 if (messages != null) {
                     Logger.log("Cleaning up DataBus...");
                     DataBus.getInstance().unregister(this, messages);
