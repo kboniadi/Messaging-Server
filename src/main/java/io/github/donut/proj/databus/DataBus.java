@@ -6,10 +6,10 @@ import java.util.Objects;
 import java.util.Set;
 
 public class DataBus {
-    private final HashMap<String, Set<Member>> list = new HashMap<>();
+    private final HashMap<String, Set<Member>> list;
 
     private DataBus() {
-        // empty
+        list = new HashMap<>();
     }
 
     private static class InstanceHolder {
