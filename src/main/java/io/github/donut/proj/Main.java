@@ -13,13 +13,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.AbstractMap;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
     private static  final int MAX_T = 8;
-    private static final BlockingQueue<AbstractMap.SimpleImmutableEntry<ClientHandler, JsonObject>> bufferSink = new ArrayBlockingQueue<>(MAX_T);
+    private static final BlockingQueue<AbstractMap.SimpleImmutableEntry<ClientHandler, JsonObject>> bufferSink = new LinkedBlockingQueue<>();
 
     public static void main(String[] args) throws IOException {
         Logger.init("io/github/donut/proj/configs/logging.properties");
