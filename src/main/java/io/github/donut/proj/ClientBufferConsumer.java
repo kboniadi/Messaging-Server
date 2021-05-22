@@ -34,7 +34,6 @@ public class ClientBufferConsumer implements Runnable {
                 AbstractMap.SimpleImmutableEntry<Main.ClientHandler, JsonObject> temp = bufferSink.take();
                 switch (temp.getValue().get("type").getAsString()) {
                 case "Subscribe":
-                    System.out.println("Subscriber: " + temp.getKey());
                     temp.getKey().messages = GsonWrapper.fromJson(temp.getValue().get("channels")
                             .getAsJsonArray()
                             .toString(), String[].class);
