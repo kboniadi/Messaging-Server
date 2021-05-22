@@ -30,7 +30,7 @@ public class ClientBufferConsumer implements Runnable {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (Main.isAlive) {
                 AbstractMap.SimpleImmutableEntry<Main.ClientHandler, JsonObject> temp = bufferSink.take();
                 switch (temp.getValue().get("type").getAsString()) {
                 case "Subscribe":
