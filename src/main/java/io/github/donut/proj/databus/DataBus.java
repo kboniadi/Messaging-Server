@@ -20,12 +20,22 @@ public class DataBus {
         return InstanceHolder.INSTANCE;
     }
 
+    public void printList() {
+        list.forEach((key, value) -> {
+            System.out.println(key);
+            value.forEach((member) -> {
+                System.out.println("- " + member);
+            });
+        });
+    }
     public void register(Member client, String... messagesType) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(messagesType);
         for (var message : messagesType) {
             list.computeIfAbsent(message, k -> new HashSet<>()).add(client);
         }
+        System.out.println("Register");
+        printList();
     }
 
     public void unregister(Member client, String... messagesType) {
@@ -40,6 +50,8 @@ public class DataBus {
                     list.remove(message);
             }
         }
+        System.out.println("UnRegister");
+        printList();
     }
 
     public void publish(String type, String json) {
