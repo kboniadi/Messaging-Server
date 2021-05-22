@@ -5,6 +5,9 @@ import io.github.donut.proj.databus.DataBus;
 import io.github.donut.proj.utils.GsonWrapper;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 public class ClientBufferConsumer implements Runnable {
@@ -27,7 +30,7 @@ public class ClientBufferConsumer implements Runnable {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (Main.isAlive) {
                 AbstractMap.SimpleImmutableEntry<Main.ClientHandler, JsonObject> temp = bufferSink.take();
                 switch (temp.getValue().get("type").getAsString()) {
                 case "Subscribe":
@@ -40,11 +43,32 @@ public class ClientBufferConsumer implements Runnable {
                     temp.getValue().remove("type");
                     DataBus.getInstance().publish(temp.getValue().get("channels").getAsString(), temp.getValue().toString());
                     break;
+                case "Unsubscribe":
+                    String[] msgToRemove = GsonWrapper.fromJson(temp.getValue().get("channels")
+                            .getAsJsonArray()
+                            .toString(), String[].class);
+                    temp.getKey().messages = worker(temp.getKey().messages, msgToRemove).toArray(new String[0]);
+                    DataBus.getInstance().unregister(temp.getKey(), msgToRemove);
+                    break;
                 }
             }
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private List<String> worker(String[] messages, String[] msgToRemove) {
+        List<String> list1 = Arrays.asList(messages);
+        List<String> list2 = Arrays.asList(msgToRemove);
+
+        List<String> union = new ArrayList<>(list1);
+        union.addAll(list2);
+
+        List<String> intersection = new ArrayList<>(list1);
+        intersection.retainAll(list2);
+
+        union.removeAll(intersection);
+
+        return union;
     }
 }

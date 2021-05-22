@@ -20,6 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Main {
     private static  final int MAX_T = 8;
     private static final BlockingQueue<AbstractMap.SimpleImmutableEntry<ClientHandler, JsonObject>> bufferSink = new LinkedBlockingQueue<>();
+    static volatile Boolean isAlive = true;
 
     public static void main(String[] args) throws IOException {
         Logger.init("io/github/donut/proj/configs/logging.properties");
@@ -27,10 +28,32 @@ public class Main {
 
         var pool = Executors.newFixedThreadPool(MAX_T);
 
-        new Thread(new ClientBufferConsumer(bufferSink)).start();
+        Thread consumer = new Thread(new ClientBufferConsumer(bufferSink));
+        consumer.start();
+
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//            isAlive = false;
+//            System.out.println("1");
+//            try {
+//                System.out.println("2");
+//                consumer.interrupt();
+//                System.out.println("5");
+//                consumer.join();
+//                System.out.println("3");
+////                List<Runnable> temp = pool.shutdownNow();
+////                temp.forEach((client) -> {
+////
+////                });
+//                pool.shutdown();
+//                System.out.println("hi");
+//            } catch (InterruptedException e) {
+//                System.out.println("consumer shutdown");
+//            }
+//            System.out.println("test");
+//        }));
 
         try (var listener = new ServerSocket(9000)) {
-            while (true) {
+            while (isAlive) {
                 pool.execute(new ClientHandler(listener.accept()));
             }
         }
@@ -39,7 +62,7 @@ public class Main {
     public static class ClientHandler implements Runnable, Member {
         private final Socket socket;
         String[] messages;
-        IOWrapper buffer;
+        private final IOWrapper buffer;
 
         public ClientHandler(Socket socket) throws IOException {
             this.socket = socket;
@@ -62,9 +85,8 @@ public class Main {
          */
         @Override
         public void run() {
-            boolean isClosed = false;
             try {
-                while (true) {
+                while (isAlive) {
                     JsonObject json = GsonWrapper.fromJson(buffer.readLine());
                     if (json == null) return;
                     bufferSink.put(new AbstractMap.SimpleImmutableEntry<>(this, json));

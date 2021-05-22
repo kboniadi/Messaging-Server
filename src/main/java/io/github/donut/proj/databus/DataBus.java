@@ -1,5 +1,7 @@
 package io.github.donut.proj.databus;
 
+import lombok.NonNull;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
@@ -20,17 +22,24 @@ public class DataBus {
         return InstanceHolder.INSTANCE;
     }
 
-    public void register(Member client, String... messagesType) {
-        Objects.requireNonNull(client);
-        Objects.requireNonNull(messagesType);
+    /*=============FOR DEBUGGING============================*/
+//    public void printList() {
+//        list.forEach((key, value) -> {
+//            System.out.println(key);
+//            value.forEach((member) -> {
+//                System.out.println("- " + member);
+//            });
+//        });
+//    }
+    /*=============FOR DEBUGGING END==========================*/
+
+    public void register(@NonNull Member client, @NonNull String... messagesType) {
         for (var message : messagesType) {
             list.computeIfAbsent(message, k -> new HashSet<>()).add(client);
         }
     }
 
-    public void unregister(Member client, String... messagesType) {
-        Objects.requireNonNull(client);
-        Objects.requireNonNull(messagesType);
+    public void unregister(@NonNull Member client, @NonNull String... messagesType) {
         for (var message : messagesType) {
             Set<?> reference = list.get(message);
             if (reference != null) {
@@ -42,9 +51,7 @@ public class DataBus {
         }
     }
 
-    public void publish(String type, String json) {
-        Objects.requireNonNull(type);
-        Objects.requireNonNull(json);
+    public void publish(@NonNull String type, @NonNull String json) {
         Set<Member> clients = list.get(type);
         if (clients != null)
             clients.forEach(k -> k.send(json));
