@@ -18,15 +18,23 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
-    private static  final int MAX_T = 8;
+//    private static  final int MAX_T = 8;
     private static final BlockingQueue<AbstractMap.SimpleImmutableEntry<ClientHandler, JsonObject>> bufferSink = new LinkedBlockingQueue<>();
     static volatile Boolean isAlive = true;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+        try {
+            new Main().startServer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void startServer() throws IOException {
         Logger.init("io/github/donut/proj/configs/logging.properties");
         Logger.log("Started server...");
 
-        var pool = Executors.newFixedThreadPool(MAX_T);
+        var pool = Executors.newCachedThreadPool();
 
         Thread consumer = new Thread(new ClientBufferConsumer(bufferSink));
         consumer.start();
@@ -58,7 +66,6 @@ public class Main {
             }
         }
     }
-
     public static class ClientHandler implements Runnable, Member {
         private final Socket socket;
         String[] messages;
