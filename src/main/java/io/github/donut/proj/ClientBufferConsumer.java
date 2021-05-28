@@ -1,5 +1,6 @@
 package io.github.donut.proj;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.donut.proj.databus.DataBus;
 import io.github.donut.proj.utils.GsonWrapper;
@@ -33,11 +34,15 @@ public class ClientBufferConsumer implements Runnable {
             while (Main.isAlive) {
                 AbstractMap.SimpleImmutableEntry<Main.ClientHandler, JsonObject> temp = bufferSink.take();
                 switch (temp.getValue().get("type").getAsString()) {
+                case "Register":
+                    temp.getKey().uuid = temp.getValue().get("uuid").getAsString();
+//                    DataBus.getInstance().logMember(temp.getKey());
+                    break;
                 case "Subscribe":
-                    temp.getKey().messages = GsonWrapper.fromJson(temp.getValue().get("channels")
+                    temp.getKey().channels = GsonWrapper.fromJson(temp.getValue().get("channels")
                             .getAsJsonArray()
                             .toString(), String[].class);
-                    DataBus.getInstance().register(temp.getKey(), temp.getKey().messages);
+                    DataBus.getInstance().register(temp.getKey(), temp.getKey().channels);
                     break;
                 case "Message":
                     temp.getValue().remove("type");
@@ -47,7 +52,7 @@ public class ClientBufferConsumer implements Runnable {
                     String[] msgToRemove = GsonWrapper.fromJson(temp.getValue().get("channels")
                             .getAsJsonArray()
                             .toString(), String[].class);
-                    temp.getKey().messages = worker(temp.getKey().messages, msgToRemove).toArray(new String[0]);
+                    temp.getKey().channels = worker(temp.getKey().channels, msgToRemove).toArray(new String[0]);
                     DataBus.getInstance().unregister(temp.getKey(), msgToRemove);
                     break;
                 }
