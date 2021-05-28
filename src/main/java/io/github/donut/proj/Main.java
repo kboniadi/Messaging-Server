@@ -3,9 +3,11 @@ package io.github.donut.proj;
 import com.google.gson.JsonObject;
 import io.github.donut.proj.databus.DataBus;
 import io.github.donut.proj.databus.Member;
+import io.github.donut.proj.databus.UnexpectedConnectionLost;
 import io.github.donut.proj.utils.GsonWrapper;
 import io.github.donut.proj.utils.IOWrapper;
 import io.github.donut.proj.utils.Logger;
+import org.json.JSONObject;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -39,27 +41,6 @@ public class Main {
         Thread consumer = new Thread(new ClientBufferConsumer(bufferSink));
         consumer.start();
 
-//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-//            isAlive = false;
-//            System.out.println("1");
-//            try {
-//                System.out.println("2");
-//                consumer.interrupt();
-//                System.out.println("5");
-//                consumer.join();
-//                System.out.println("3");
-////                List<Runnable> temp = pool.shutdownNow();
-////                temp.forEach((client) -> {
-////
-////                });
-//                pool.shutdown();
-//                System.out.println("hi");
-//            } catch (InterruptedException e) {
-//                System.out.println("consumer shutdown");
-//            }
-//            System.out.println("test");
-//        }));
-
         try (var listener = new ServerSocket(9000)) {
             while (isAlive) {
                 pool.execute(new ClientHandler(listener.accept()));
@@ -67,8 +48,9 @@ public class Main {
         }
     }
     public static class ClientHandler implements Runnable, Member {
+        public String uuid;
         private final Socket socket;
-        String[] messages;
+        String[] channels;
         private final IOWrapper buffer;
 
         public ClientHandler(Socket socket) throws IOException {
@@ -101,9 +83,16 @@ public class Main {
             } catch (IOException | InterruptedException e) {
                 Logger.log("Closing client connection...");
             } finally {
-                if (messages != null) {
+//                DataBus.getInstance().removeMember(this);
+                if (channels != null && channels.length > 0) {
+                    Logger.log("Unexpected termination...");
+                    JSONObject json = new JSONObject();
+                    json.put("uuid", this.uuid);
+                    json.put("channels", "UnexpectedConnectionLost");
+                    json.put("message", new JSONObject(new UnexpectedConnectionLost(this.uuid, System.currentTimeMillis(), this.channels)));
                     Logger.log("Cleaning up DataBus...");
-                    DataBus.getInstance().unregister(this, messages);
+                    DataBus.getInstance().unregister(this, channels);
+                    DataBus.getInstance().publish("UnexpectedConnectionLost", json.toString());
                 }
                 try {
                     Logger.log("Cleaning up buffer and socket connections...");
